@@ -16,3 +16,5 @@ Route::post('coaches',[CoachesController::class,'store']);
 
 Route::get('users',[UsersController::class,'index']);
 Route::post('users',[UsersController::class,'store']);
+Route::get('/users/{id}', [UsersController::class, 'users']);
+Route::post('users/edit', [UsersController::class, 'update']);
