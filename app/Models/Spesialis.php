@@ -5,22 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Coaches extends Model
+class Spesialis extends Model
 {
     use HasFactory;
 
-    protected $table = 'coaches';
-
+    protected $table = 'trainer_spesialis';
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    
     protected $fillable = [
-        'nama',
-        'jenis_kelamin',
-        'tanggal_lahir',
-        'pengalaman_tahun',
-        'lokasi_kerja',
-        'email'
+        'id_trainer',
+        'spesialis',
+        'desc',
+        'is_active',
     ];
 }

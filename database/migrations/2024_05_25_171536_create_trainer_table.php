@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_detail', function (Blueprint $table) {
-            $table->uuid('id')->primary(); // ID anggota sebagai UUID
+        Schema::create('trainer', function (Blueprint $table) {
+            $table->string('id')->primary(); 
             $table->uuid('id_user')->unique(); 
-            $table->string('id_member')->unique(); 
-            $table->integer('tipe_anggota'); // Tipe anggota 0: admin, 1:trainer, 2:client
+            $table->string('email2');
             $table->enum('jenis_kelamin', ['p', 'w']); // Jenis kelamin
             $table->date('tanggal_lahir'); // Tanggal lahir
             $table->integer('tinggi_badan'); // Tinggi badan
@@ -25,10 +24,11 @@ return new class extends Migration
             $table->string('telepon')->nullable(); // Telepon
             $table->text('about_me')->nullable(); // About me
             $table->string('profile_foto')->nullable(); // Profile foto
+            $table->enum('is_active', ['Y', 'N'])->default('Y');
             $table->timestamps(); // Created at dan Updated at
 
             // Relasi dengan tabel users
-            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('id_user')->references('id')->on('users');
         });
     }
 
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_detail');
+        Schema::dropIfExists('trainer');
     }
 };

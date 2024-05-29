@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary(); // ID anggota sebagai UUID
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->integer('tipe_user'); //1 : admin, 2: user
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+        Schema::create('program', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('program');
+            $table->decimal('price');
+            $table->text('desc');
             $table->enum('is_active', ['Y', 'N'])->default('Y');
-            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('program');
     }
 };

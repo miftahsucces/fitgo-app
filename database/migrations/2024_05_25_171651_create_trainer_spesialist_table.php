@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary(); // ID anggota sebagai UUID
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->integer('tipe_user'); //1 : admin, 2: user
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+        Schema::create('trainer_spesialis', function (Blueprint $table) {
+            $table->uuid('id')->primary(); 
+            $table->string('id_trainer'); 
+            $table->string('spesialis'); 
+            $table->string('desc')->nullable(); 
             $table->enum('is_active', ['Y', 'N'])->default('Y');
-            $table->rememberToken();
             $table->timestamps();
+
+            // Relasi dengan tabel users_detail
+            $table->foreign('id_trainer')->references('id')->on('trainer');
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('trainer_spesialis');
     }
 };
