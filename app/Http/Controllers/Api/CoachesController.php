@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Certification;
-use App\Models\Coaches;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -18,20 +17,35 @@ class CoachesController extends Controller
 {
     public function index()
     {
-        $coaches = Coaches::all();
-        if ($coaches->count() > 0) {
-            return response()->json([
-                'code' => 200,
-                'data' => $coaches,
-                'status' => 'success'
-            ], 200);
-        } else {
-            return response()->json([
-                'code' => 404,
-                'data' => $coaches,
-                'status' => 'No Record Found'
-            ], 404);
+        // Lakukan query untuk mendapatkan data pengguna berdasarkan ID
+        $user = User::rightJoin('trainer', 'users.id', '=', 'trainer.id_user')
+            ->select(
+                'trainer.id',
+                'users.tipe_user',
+                'name',
+                'email',
+                'id_user',
+                'jenis_kelamin',
+                'tanggal_lahir',
+                'tinggi_badan',
+                'berat_badan',
+                'golongan_darah',
+                'alamat',
+                'telepon',
+                'about_me',
+                'profile_foto'
+            )
+            ->get();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
         }
+
+        return response()->json([
+            'code' => 200,
+            'data' => $user,
+            'status' => 'success'
+        ], 200);
     }
 
     public function coaches($id)
