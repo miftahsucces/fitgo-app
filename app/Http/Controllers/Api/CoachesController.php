@@ -90,7 +90,7 @@ class CoachesController extends Controller
         $user->id = (string) Str::uuid();
         $user->name = $request->fullName;
         $user->email = $request->email;
-        $user->tipe_user = '2'; //1 :admin, 2 : trainer, 3 : client
+        $user->tipe_user = '1'; //1 :admin, 2 : trainer, 3 : client
         $user->password = Hash::make($request->password);
 
         if ($user->save()) {

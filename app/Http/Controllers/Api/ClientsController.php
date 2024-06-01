@@ -15,6 +15,8 @@ use App\Models\Spesialis;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\DB;
+
 class ClientsController extends Controller
 {
     public function index()
@@ -75,6 +77,16 @@ class ClientsController extends Controller
                 'aktifitas',
                 'tujuan',
                 'medis',
+                DB::raw("
+                CASE 
+                    WHEN jenis_kelamin = 'p' THEN 'Male'
+                    WHEN jenis_kelamin = 'w' THEN 'Female'
+                    ELSE 'Unknown'
+                END AS gender_label
+                "),
+                    DB::raw("
+                    TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) AS umur_tahun
+                "),
             )
             ->where('users.id', '=', $id)
             ->first();
@@ -82,6 +94,7 @@ class ClientsController extends Controller
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
+        
 
         return response()->json([
             'code' => 200,
@@ -98,7 +111,7 @@ class ClientsController extends Controller
         $user->id = (string) Str::uuid();
         $user->name = $request->fullName;
         $user->email = $request->email;
-        $user->tipe_user = '2'; //1 :admin, 2 : trainer, 3 : client
+        $user->tipe_user = '3'; //1 :admin, 2 : trainer, 3 : client
         $user->password = Hash::make($request->password);
 
         if ($user->save()) {

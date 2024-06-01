@@ -14,15 +14,12 @@ return new class extends Migration
         Schema::create('schedule', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('id_trainer');
-            $table->uuid('id_client');
             $table->uuid('id_program');
-            $table->date('date_schedule');
-            $table->time('time_start');
-            $table->time('time_end');
+            $table->string('desc')->nullable();
+            $table->integer('total_days')->nullable();
             $table->timestamps();
             $table->enum('is_active', ['Y', 'N'])->default('Y');
 
-            $table->foreign('id_client')->references('id')->on('client');
             $table->foreign('id_trainer')->references('id')->on('trainer');
             $table->foreign('id_program')->references('id')->on('program');
         });
