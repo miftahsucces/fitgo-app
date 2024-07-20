@@ -1,59 +1,98 @@
 <?php
 
-use App\Http\Controllers\Api\ClientsController;
-use App\Http\Controllers\Api\CoachesController;
-use App\Http\Controllers\Api\UsersController;
-use App\Http\Controllers\Api\ProgramsController;
-use App\Http\Controllers\Api\ProgressController;
-use App\Http\Controllers\Api\ScheduleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
-Route::get('coaches',[CoachesController::class,'index']);
-Route::get('coaches/{id}',[CoachesController::class,'coaches']);
-Route::post('coaches',[CoachesController::class,'store']);
-Route::post('coaches/edit',[CoachesController::class,'update']);
-Route::get('coaches/spesialis/{id}',[CoachesController::class,'spesialis']);
-Route::post('coaches/spesialis',[CoachesController::class,'storeSpesialis']);
-Route::delete('coaches/spesialis/{id}', [CoachesController::class, 'destroySpesialis']);
-Route::get('coaches/certification/{id}',[CoachesController::class,'certi']);
-Route::post('coaches/certification',[CoachesController::class,'storeCert']);
-Route::delete('coaches/certification/{id}', [CoachesController::class, 'destroyCerti']);
+Route::group(['prefix' => 'auth'], function() {
+    Route::controller(\App\Http\Controllers\API\AuthController::class)->group(function() {
+        Route::post('register','register');
+        Route::post('login','login');
+        Route::get('send-mail', 'testMail');
+        Route::post('forget-password-request', 'forgetPasswordRequest');
+        Route::post('forget-password', 'verifyAndChangePassword');
+    });
+    Route::group(['middleware' => 'auth:sanctum'], function() {
+        Route::controller(\App\Http\Controllers\API\AuthController::class)->group(function() {
+            Route::get('logout', 'logout');
+            Route::get('get-profile', 'getProfile');
+            Route::post('change-password', 'changePassword');
+            Route::post('update-profile', 'updateProfile');
+        });
+    });
+});
 
-Route::get('clients',[ClientsController::class,'index']);
-Route::get('clients/{id}',[ClientsController::class,'clients']);
-Route::post('clients',[ClientsController::class,'store']);
-Route::post('clients/edit',[ClientsController::class,'update']);
+Route::group(['middleware' => 'auth:sanctum'], function() {
+    Route::group(['prefix' => 'xyz'], function(){
 
-Route::get('programs',[ProgramsController::class,'index']);
-Route::get('programs/{id}',[ProgramsController::class,'programs']);
-Route::post('programs',[ProgramsController::class,'store']);
-Route::post('programs/edit',[ProgramsController::class,'update']);
+        Route::controller(\App\Http\Controllers\API\CoachesController::class)->group(function(){
+            Route::get('coaches','index');
+            Route::get('coaches/{id}','coaches');
+            Route::post('coaches','store');
+            Route::post('coaches/edit','update');
+            Route::get('coaches/spesialis/{id}','spesialis');
+            Route::post('coaches/spesialis','storeSpesialis');
+            Route::delete('coaches/spesialis/{id}',  'destroySpesialis');
+            Route::get('coaches/certification/{id}','certi');
+            Route::post('coaches/certification','storeCert');
+            Route::delete('coaches/certification/{id}',  'destroyCerti');
+        });  
 
-Route::get('schedule',[ScheduleController::class,'trainings']);
-Route::get('schedule/{id}',[ScheduleController::class,'schedule']);
-Route::post('schedule',[ScheduleController::class,'store']);
-Route::post('schedule/edit',[ScheduleController::class,'update']);
+        Route::controller(\App\Http\Controllers\API\ClientsController::class)->group(function(){
+            Route::get('clients','index');
+            Route::get('clients/{id}','clients');
+            Route::post('clients','store');
+            Route::post('clients/edit','update');
+        }); 
 
-Route::get('schedule/member',[ScheduleController::class,'index']);
-Route::get('schedule/member/{id}',[ScheduleController::class,'members']);
-Route::post('schedule/member',[ScheduleController::class,'storeMember']);
-Route::post('schedule/member/edit',[ScheduleController::class,'update']);
+        Route::controller(\App\Http\Controllers\API\ProgramsController::class)->group(function(){
+            Route::get('programs','index');
+            Route::get('programs/{id}','programs');
+            Route::post('programs','store');
+            Route::post('programs/edit','update');
 
-Route::get('schedule/detail',[ScheduleController::class,'index']);
-Route::get('schedule/detail/{id}',[ScheduleController::class,'detail']);
-Route::post('schedule/detail',[ScheduleController::class,'storeDetail']);
-Route::post('schedule/detail/edit',[ScheduleController::class,'update']);
+        }); 
 
-Route::get('users',[UsersController::class,'index']);
-Route::post('users',[UsersController::class,'store']);
-Route::get('/users/{id}', [UsersController::class, 'users']);
-Route::post('users/edit', [UsersController::class, 'update']);
+        Route::controller(\App\Http\Controllers\API\ScheduleController::class)->group(function(){
+            Route::get('schedule','trainings');
+            Route::get('schedule/{id}','schedule');
+            Route::post('schedule','store');
+            Route::post('schedule/edit','update');
+            Route::get('schedule/member','index');
+            Route::get('schedule/member/{id}','members');
+            Route::post('schedule/member','storeMember');
+            Route::post('schedule/member/edit','update');
 
-Route::get('progress/trainer/{id}',[ProgressController::class,'trainerClient']);
+        }); 
+
+        Route::controller(\App\Http\Controllers\API\UsersController::class)->group(function(){
+            Route::get('users','index');
+            Route::post('users','store');
+            Route::get('/users/{id}', 'users');
+            Route::post('users/edit', 'update');
+
+        }); 
+
+        Route::controller(\App\Http\Controllers\API\ProgressController::class)->group(function(){
+            Route::get('progress/trainer/{id}','trainerClient');
+
+        }); 
+
+
+    });
+});
