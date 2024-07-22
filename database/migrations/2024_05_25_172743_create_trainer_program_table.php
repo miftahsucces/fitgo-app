@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->enum('is_active', ['Y', 'N'])->default('Y');
 
-            $table->foreign('id_trainer')->references('id')->on('trainer');
+            $table->foreign('id_trainer')->references('id')->on('users');
             $table->foreign('id_program')->references('id')->on('program');
         });
     }

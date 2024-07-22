@@ -16,38 +16,26 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $request->validate([
-            'first_name' => 'required',
-            'email' => 'required|unique:users,email',
-            'password' => 'required|confirmed'
-        ]);
+        // $request->validate([
+        //     'name' => 'required',
+        //     'email' => 'required|unique:users,email',
+        //     'password' => 'required|confirmed'
+        // ]);
 
         $user = User::create([
             'id' => (string) Str::uuid(),
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'name' => $request->first_name,
             'email' => $request->email,
             'tipe_user' => '2',
             'password' => bcrypt($request->password)
         ]);
 
         if ($user) {
-            $patients = new Patients();
-            $patients->id = $this->generateId();
-            $patients->id_user = $user->id;
-            if ($patients->save()) {
-                return response()->json([
-                    'code' => 200,
-                    'message' => 'User and User Detail created successfully',
-                    'status' => 'success'
-                ], 200);
-            } else {
-                return response()->json([
-                    'code' => 500,
-                    'message' => 'Failed to create user detail',
-                    'status' => 'failed'
-                ], 500);
-            }
+            return response()->json([
+                'code' => 200,
+                'message' => 'User and User Detail created successfully',
+                'status' => 'success'
+            ], 200);
         } else {
             return response()->json([
                 'code' => 500,
@@ -56,18 +44,14 @@ class AuthController extends Controller
             ], 500);
         }
 
-
-        // return response()->json([
-        //     'message' => "Account successfully created."
-        // ]);
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required'
-        ]);
+        // $request->validate([
+        //     'email' => 'required',
+        //     'password' => 'required'
+        // ]);
 
         if (!Auth::attempt($request->only(['email', 'password']))) {
             return response()->json([
@@ -82,7 +66,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login success',
-            'user' => $user->load('notifications'),
+            'user' => $user,
             'access_token' => $token->plainTextToken
         ]);
     }

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('is_active', ['Y', 'N'])->default('Y');
 
             $table->foreign('id_schedule')->references('id')->on('schedule');
-            $table->foreign('id_client')->references('id')->on('client');
+            $table->foreign('id_client')->references('id')->on('users');
         });
     }
 

@@ -27,7 +27,8 @@ return new class extends Migration
             $table->date('date_actual');
             $table->timestamps();
 
-            $table->foreign('id_client')->references('id')->on('client');
+
+            $table->foreign('id_client')->references('id')->on('users');
         });
     }
 

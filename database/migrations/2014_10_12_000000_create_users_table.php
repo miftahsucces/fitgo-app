@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary(); // ID anggota sebagai UUID
-            $table->string('name');
+            $table->string('full_name');
             $table->string('email')->unique();
             $table->integer('tipe_user'); //1 : admin, 2: user
             $table->timestamp('email_verified_at')->nullable();

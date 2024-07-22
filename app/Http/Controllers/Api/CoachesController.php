@@ -22,7 +22,7 @@ class CoachesController extends Controller
             ->select(
                 'trainer.id',
                 'users.tipe_user',
-                'name',
+                'full_name',
                 'email',
                 'id_user',
                 'jenis_kelamin',
@@ -55,7 +55,7 @@ class CoachesController extends Controller
             ->select(
                 'trainer.id',
                 'users.tipe_user',
-                'name',
+                'full_name',
                 'email',
                 'id_user',
                 'jenis_kelamin',
@@ -88,7 +88,7 @@ class CoachesController extends Controller
         // Buat user baru
         $user = new User();
         $user->id = (string) Str::uuid();
-        $user->name = $request->fullName;
+        $user->full_name = $request->fullName;
         $user->email = $request->email;
         $user->tipe_user = '1'; //1 :admin, 2 : trainer, 3 : client
         $user->password = Hash::make($request->password);
@@ -104,7 +104,7 @@ class CoachesController extends Controller
             $trainer->berat_badan = $request->weight;
             $trainer->golongan_darah = $request->bloodType;
             $trainer->alamat = $request->address;
-            $trainer->telepon = $request->telepon;
+            $trainer->telepon = $request->phoneNumber;
             // $trainer->about_me = $request->about_me;
             // $trainer->profile_foto = $request->profile_foto;
 
@@ -141,7 +141,7 @@ class CoachesController extends Controller
 
         if ($user) {
             // Update user details
-            $user->name = $request->fullName;
+            $user->full_name = $request->fullName;
             $user->email = $request->email;
             if ($request->password) {
                 $user->password = Hash::make($request->password);
@@ -166,7 +166,7 @@ class CoachesController extends Controller
                 $trainer->berat_badan = $request->weight;
                 $trainer->golongan_darah = $request->bloodType;
                 $trainer->alamat = $request->address;
-                $trainer->telepon = $request->telepon;
+                $trainer->telepon = $request->phoneNumber;
                 // $trainer->about_me = $request->about_me;
                 // $trainer->profile_foto = $request->profile_foto;
 
@@ -205,13 +205,12 @@ class CoachesController extends Controller
 
     public function spesialis($id)
     {
-        $spesialis = Trainer::rightJoin('trainer_spesialis', 'trainer.id', '=', 'trainer_spesialis.id_trainer')
-            ->leftJoin('users', 'users.id', '=', 'trainer.id_user')
+        $spesialis = Trainer::rightJoin('trainer_spesialis', 'trainer.id_user', '=', 'trainer_spesialis.id_trainer')
             ->select(
                 'trainer_spesialis.id',
                 'spesialis',
             )
-            ->where('users.id', '=', $id)
+            ->where('trainer_spesialis.id_trainer', '=', $id)
             ->orderBy('trainer_spesialis.created_at', 'desc') // Tambahkan order by
             ->get();
 
@@ -228,14 +227,6 @@ class CoachesController extends Controller
 
     public function storeSpesialis(Request $request)
     {
-        // Mengambil id_trainer dari tabel trainer berdasarkan id_user
-        $id_user = $request->id_user;
-        $trainer = Trainer::where('id_user', $id_user)->first();
-
-        if (!$trainer) {
-            return response()->json(['message' => 'Trainer not found'], 404);
-        }
-
         // Periksa apakah id spesialis diberikan dalam request
         if ($request->has('id') && $request->id) {
             // Mencari entri spesialis berdasarkan id
@@ -252,7 +243,7 @@ class CoachesController extends Controller
             // Jika id tidak diberikan atau tidak ditemukan, buat entri spesialis baru
             $spesialis = new Spesialis();
             $spesialis->id = (string) Str::uuid();
-            $spesialis->id_trainer = $trainer->id;
+            $spesialis->id_trainer = $request->id_user;
             $spesialis->spesialis = $request->spesialis;
             $operation = 'created';
         }
@@ -306,8 +297,7 @@ class CoachesController extends Controller
 
     public function certi($id)
     {
-        $certification = Trainer::rightJoin('trainer_certification', 'trainer.id', '=', 'trainer_certification.id_trainer')
-            ->leftJoin('users', 'users.id', '=', 'trainer.id_user')
+        $certification = Trainer::rightJoin('trainer_certification', 'trainer.id_user', '=', 'trainer_certification.id_trainer')
             ->select(
                 'trainer_certification.id',
                 'id_trainer',
@@ -317,7 +307,7 @@ class CoachesController extends Controller
                 'location',
                 'desc',
             )
-            ->where('users.id', '=', $id)
+            ->where('trainer_certification.id_trainer', '=', $id)
             ->orderBy('trainer_certification.created_at', 'desc') // Tambahkan order by
             ->get();
 
@@ -335,14 +325,6 @@ class CoachesController extends Controller
 
     public function storeCert(Request $request)
     {
-        // Mengambil id_trainer dari tabel trainer berdasarkan id_user
-        $id_user = $request->id_user;
-        $trainer = Trainer::where('id_user', $id_user)->first();
-
-        if (!$trainer) {
-            return response()->json(['message' => 'Trainer not found'], 404);
-        }
-
         // Periksa apakah id spesialis diberikan dalam request
         if ($request->has('id') && $request->id) {
             // Mencari entri spesialis berdasarkan id
@@ -362,7 +344,7 @@ class CoachesController extends Controller
             // Jika id tidak diberikan atau tidak ditemukan, buat entri spesialis baru
             $certification = new Certification();
             $certification->id = (string) Str::uuid();
-            $certification->id_trainer = $trainer->id;
+            $certification->id_trainer = $request->id_user;
             $certification->organization = $request->organization;
             $certification->program = $request->program;
             $certification->year = $request->year;

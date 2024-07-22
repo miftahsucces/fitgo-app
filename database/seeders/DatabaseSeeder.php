@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             'id' => (string) Str::uuid(),
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'tipe_user' => '0',
         ]);
     }
 }
