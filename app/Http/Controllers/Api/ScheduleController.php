@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
@@ -18,11 +19,11 @@ class ScheduleController extends Controller
         $schedules = DB::table('fit_db.schedule AS s')
             ->leftJoin('fit_db.schedule_detail AS sd', 's.id', '=', 'sd.id_schedule')
             ->leftJoin('fit_db.program AS p', 'p.id', '=', 's.id_program')
-            ->leftJoin('fit_db.trainer AS t', 't.id', '=', 's.id_trainer')
+            ->leftJoin('fit_db.trainer AS t', 't.id_user', '=', 's.id_trainer')
             ->leftJoin('fit_db.users AS u', 'u.id', '=', 't.id_user')
             ->select(
                 's.id',
-                'u.name',
+                'u.full_name',
                 'p.program',
                 's.id AS schedule_id',
                 's.id_trainer',
@@ -42,7 +43,7 @@ class ScheduleController extends Controller
                 's.created_at',
                 's.updated_at',
                 's.is_active',
-                'u.name',
+                'u.full_name',
                 'p.program'
             )
             ->get();
@@ -118,10 +119,10 @@ class ScheduleController extends Controller
     {
         // Lakukan query untuk mendapatkan data pengguna berdasarkan ID
         $schedule = Schedule::rightJoin('schedule_member', 'schedule.id', '=', 'schedule_member.id_schedule')
-            ->leftJoin('client', 'client.id', '=', 'schedule_member.id_client')
+            ->leftJoin('client', 'client.id_user', '=', 'schedule_member.id_client')
             ->leftJoin('users', 'users.id', '=', 'client.id_user')
             ->select(
-                'users.name',
+                'users.full_name',
                 'schedule_member.id',
                 'schedule_member.id_client',
                 'jenis_kelamin',
@@ -268,5 +269,47 @@ class ScheduleController extends Controller
                 'status' => 'failed'
             ], 500);
         }
+    }
+
+    public function MyScheduleAll($id_user)
+    {
+        // Lakukan query untuk mendapatkan data pengguna berdasarkan ID
+        $schedule = Schedule::leftJoin('schedule_detail', 'schedule.id', '=', 'schedule_detail.id_schedule')
+            ->leftJoin('schedule_member', 'schedule.id', '=', 'schedule_member.id_schedule')
+            ->select('schedule.*','schedule_detail.location', 'schedule_detail.date_schedule', 'schedule_detail.time_start','schedule_detail.time_end' )
+            ->where('schedule_member.id_client', '=', $id_user)
+            ->get();
+
+        if (!$schedule) {
+            return response()->json(['message' => 'schedule not found'], 404);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'data' => $schedule,
+            'status' => 'success'
+        ], 200);
+    }
+
+    public function MyScheduleToday($id_user)
+    {
+        $currentDate = Carbon::now()->toDateString();
+        // Lakukan query untuk mendapatkan data pengguna berdasarkan ID
+        $schedule = Schedule::leftJoin('schedule_detail', 'schedule.id', '=', 'schedule_detail.id_schedule')
+            ->leftJoin('schedule_member', 'schedule.id', '=', 'schedule_member.id_schedule')
+            ->select('schedule.*','schedule_detail.location', 'schedule_detail.date_schedule', 'schedule_detail.time_start','schedule_detail.time_end' )
+            ->where('schedule_member.id_client', '=', $id_user)
+            ->where('schedule_detail.date_schedule', '=',$currentDate)
+            ->get();
+
+        if (!$schedule) {
+            return response()->json(['message' => 'schedule not found'], 404);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'data' => $schedule,
+            'status' => 'success'
+        ], 200);
     }
 }

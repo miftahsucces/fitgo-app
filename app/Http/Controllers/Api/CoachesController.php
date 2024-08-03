@@ -12,6 +12,7 @@ use App\Models\Trainer;
 use App\Models\Spesialis;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class CoachesController extends Controller
 {
@@ -33,7 +34,15 @@ class CoachesController extends Controller
                 'alamat',
                 'telepon',
                 'about_me',
-                'profile_foto'
+                'profile_foto',
+                DB::raw("CASE 
+                    WHEN jenis_kelamin = 'male' THEN 'Lelaki' 
+                    WHEN jenis_kelamin = 'female' THEN 'Perempuan' 
+                    ELSE jenis_kelamin 
+                 END AS gender"),
+                DB::raw("
+                    TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) AS umur"),
+
             )
             ->get();
 
@@ -159,7 +168,7 @@ class CoachesController extends Controller
                 }
 
                 // Update trainer details
-                $trainer->email2 = $request->email2 ?? $trainer->email2;
+                // $trainer->email2 = $request->email2 ?? $trainer->email2;
                 $trainer->jenis_kelamin = $request->gender;
                 $trainer->tanggal_lahir = $request->dob;
                 $trainer->tinggi_badan = $request->height;

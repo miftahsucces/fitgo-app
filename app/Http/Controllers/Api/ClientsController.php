@@ -26,7 +26,7 @@ class ClientsController extends Controller
             ->select(
                 'client.id',
                 'users.tipe_user',
-                'name',
+                'full_name',
                 'email',
                 'id_user',
                 'jenis_kelamin',
@@ -41,6 +41,13 @@ class ClientsController extends Controller
                 'aktifitas',
                 'tujuan',
                 'medis',
+                DB::raw("CASE 
+                    WHEN jenis_kelamin = 'male' THEN 'Lelaki' 
+                    WHEN jenis_kelamin = 'female' THEN 'Perempuan' 
+                    ELSE jenis_kelamin 
+                 END AS gender"),
+                DB::raw("
+                    TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) AS umur"),
             )
             ->get();
 
@@ -62,7 +69,7 @@ class ClientsController extends Controller
             ->select(
                 'client.id',
                 'users.tipe_user',
-                'name',
+                'full_name',
                 'email',
                 'id_user',
                 'jenis_kelamin',
@@ -109,7 +116,7 @@ class ClientsController extends Controller
         // Buat user baru
         $user = new User();
         $user->id = (string) Str::uuid();
-        $user->name = $request->fullName;
+        $user->full_name = $request->fullName;
         $user->email = $request->email;
         $user->tipe_user = '3'; //1 :admin, 2 : trainer, 3 : client
         $user->password = Hash::make($request->password);
@@ -125,7 +132,7 @@ class ClientsController extends Controller
             $client->berat_badan = $request->weight;
             $client->golongan_darah = $request->bloodType;
             $client->alamat = $request->address;
-            $client->telepon = $request->telepon;
+            $client->telepon = $request->phoneNumber;
             $client->aktifitas = $request->dailyActivity;
             $client->tujuan = $request->fitnessGoals;
             $client->medis = $request->medicalHistory;
@@ -164,7 +171,7 @@ class ClientsController extends Controller
 
         if ($user) {
             // Update user details
-            $user->name = $request->fullName;
+            $user->full_name = $request->fullName;
             $user->email = $request->email;
             if ($request->password) {
                 $user->password = Hash::make($request->password);
@@ -189,7 +196,7 @@ class ClientsController extends Controller
                 $client->berat_badan = $request->weight;
                 $client->golongan_darah = $request->bloodType;
                 $client->alamat = $request->address;
-                $client->telepon = $request->telepon;
+                $client->telepon = $request->phoneNumber;
                 $client->aktifitas = $request->dailyActivity;
                 $client->tujuan = $request->fitnessGoals;
                 $client->medis = $request->medicalHistory;

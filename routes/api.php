@@ -77,6 +77,10 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
             Route::get('schedule/member/{id}','members');
             Route::post('schedule/member','storeMember');
             Route::post('schedule/member/edit','update');
+            Route::post('schedule/detail','storeDetail');
+            Route::get('schedule/detail/{id}','detail');
+            Route::get('schedule/allday/{id}','MyScheduleAll');
+            Route::get('schedule/today/{id}','MyScheduleToday');
 
         }); 
 
@@ -90,6 +94,18 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
 
         Route::controller(\App\Http\Controllers\API\ProgressController::class)->group(function(){
             Route::get('progress/trainer/{id}','trainerClient');
+            Route::get('progress/body/{id}','getBody');
+            Route::post('progress/body','storeBody');
+            Route::post('progress/illness','storeSick');
+            Route::get('progress/illness/{id}','getSick');
+            Route::post('progress/fitness','storeFitness');
+            Route::get('progress/fitness/{id}','getFitness');
+            Route::post('progress/daily','storeDaily');
+            Route::get('progress/daily/{id}','getDaily');
+            Route::delete('progress/daily/{id}','deleteDaily');
+            Route::delete('progress/body/{id}','deleteBody');
+            Route::delete('progress/sick/{id}','deleteSick');
+            Route::delete('progress/fitness/{id}','deleteFitness');
 
         }); 
 
